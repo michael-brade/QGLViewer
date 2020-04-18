@@ -8,10 +8,10 @@
 
 #include <QMatrix4x4>
 
-#include "camera.h"
 #include "gldata.h"
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
+QT_FORWARD_DECLARE_CLASS(Camera)
 
 
 struct GridConfig {
@@ -44,7 +44,7 @@ public:
   QSize minimumSizeHint() const override;
   QSize sizeHint() const override;
 
-  Camera& camera() { return m_camera; }
+  Camera *camera() { return m_camera; }
 
   void setData(const GLData &data);
 
@@ -90,7 +90,7 @@ private:
 
   QOpenGLShaderProgram *m_program;
 
-  Camera m_camera;
+  Camera *m_camera;
 
   int m_mvpMatrixLoc;
 };

@@ -1,4 +1,5 @@
 #include "qglviewer.h"
+#include "camera.h"
 
 #include <QMouseEvent>
 #include <QOpenGLShaderProgram>
@@ -34,7 +35,7 @@ QGLViewer::QGLViewer(QWidget *parent)
     m_axesVertexIdx(-1),
     m_axesConfig(),
     m_program(nullptr),
-    m_camera()
+    m_camera(new Camera)
 {
   QSurfaceFormat format;
   format.setDepthBufferSize(24);
@@ -44,6 +45,8 @@ QGLViewer::QGLViewer(QWidget *parent)
 
 QGLViewer::~QGLViewer() {
   cleanup();
+  delete m_camera;
+  m_camera = nullptr;
 }
 
 
@@ -148,7 +151,7 @@ void QGLViewer::initializeGL() {
 
   setupGL();
 
-  m_camera.reset();
+  m_camera->reset();
 }
 
 
@@ -249,7 +252,7 @@ void QGLViewer::paintGL() {
   glEnable(GL_CULL_FACE);
 
   m_program->bind();
-  m_program->setUniformValue(m_mvpMatrixLoc, m_camera.toMatrix());
+  m_program->setUniformValue(m_mvpMatrixLoc, m_camera->toMatrix());
 
 
   /* It doesn't matter if the vertex attributes are all from one buffer or multiple buffers,
@@ -282,36 +285,36 @@ void QGLViewer::paintGL() {
 }
 
 void QGLViewer::resizeGL(int w, int h) {
-  m_camera.setAspectRatio(GLfloat(w) / h);
+  m_camera->setAspectRatio(GLfloat(w) / h);
 }
 
 void QGLViewer::keyPressEvent(QKeyEvent *event) {
   switch (event->key()) {
-  case Qt::Key_A:
-    m_drawAxes = !m_drawAxes;
-    break;
-  case Qt::Key_G:
-    m_drawGrid = !m_drawGrid;
-    break;
+    case Qt::Key_A:
+      m_drawAxes = !m_drawAxes;
+      break;
+    case Qt::Key_G:
+      m_drawGrid = !m_drawGrid;
+      break;
 
-  case Qt::Key_0:
-    m_camera.reset();
-    break;
-  case Qt::Key_P:
-    m_camera.setProjectionMode(ProjectionMode::Perspective);
-    break;
-  case Qt::Key_O:
-    m_camera.setProjectionMode(ProjectionMode::Orthographic);
-    break;
-  case Qt::Key_F:
-    m_camera.setCameraMode(CameraMode::Free);
-    break;
-  case Qt::Key_T:
-    m_camera.setCameraMode(CameraMode::Target);
-    break;
-  case Qt::Key_L:           // log current camera data
-    qDebug() << m_camera;
-    break;
+    case Qt::Key_0:
+      m_camera->reset();
+      break;
+    case Qt::Key_P:
+      m_camera->setProjectionMode(ProjectionMode::Perspective);
+      break;
+    case Qt::Key_O:
+      m_camera->setProjectionMode(ProjectionMode::Orthographic);
+      break;
+    case Qt::Key_F:
+      m_camera->setCameraMode(CameraMode::Free);
+      break;
+    case Qt::Key_T:
+      m_camera->setCameraMode(CameraMode::Target);
+      break;
+    case Qt::Key_L:  // log current camera data
+      qDebug() << *m_camera;
+      break;
   }
   update();
 }
@@ -333,29 +336,29 @@ void QGLViewer::mouseMoveEvent(QMouseEvent *event) {
   }
 
   if (event->buttons() & Qt::LeftButton) {
-    if (m_camera.cameraMode() == CameraMode::Free)
-      m_camera.rotate(-0.2f * dx, m_camera.upVector());
-    else if (m_camera.upsideDown())
-      m_camera.rotate(-0.2f * dx, -m_camera.worldUpVector()); // if the up vector actually points down, reverse rotation
+    if (m_camera->cameraMode() == CameraMode::Free)
+      m_camera->rotate(-0.2f * dx, m_camera->upVector());
+    else if (m_camera->upsideDown())
+      m_camera->rotate(-0.2f * dx, -m_camera->worldUpVector()); // if the up vector actually points down, reverse rotation
     else
-      m_camera.rotate(-0.2f * dx, m_camera.worldUpVector());
+      m_camera->rotate(-0.2f * dx, m_camera->worldUpVector());
 
-    m_camera.rotate(-0.2f * dy, m_camera.rightVector());
+    m_camera->rotate(-0.2f * dy, m_camera->rightVector());
   } else if (event->buttons() & Qt::RightButton) {
-    if (m_camera.cameraMode() == CameraMode::Free) {
+    if (m_camera->cameraMode() == CameraMode::Free) {
       dx *= -1;
     }
 
-    m_camera.rotate(-0.2f * dx, m_camera.forwardVector());
-    m_camera.rotate(-0.2f * dy, m_camera.rightVector());
+    m_camera->rotate(-0.2f * dx, m_camera->forwardVector());
+    m_camera->rotate(-0.2f * dy, m_camera->rightVector());
   } else if (event->buttons() & Qt::MiddleButton) {
-    if (m_camera.cameraMode() == CameraMode::Free) {
+    if (m_camera->cameraMode() == CameraMode::Free) {
       dx *= -1;
       dy *= -1;
     }
 
-    m_camera.translate(-dx * m_camera.rightVector());
-    m_camera.translate( dy * m_camera.upVector());
+    m_camera->translate(-dx * m_camera->rightVector());
+    m_camera->translate( dy * m_camera->upVector());
   }
 
   update();
@@ -375,7 +378,7 @@ void QGLViewer::wheelEvent(QWheelEvent *event) {
   if (numDeg.y() < 0)
     factor = -factor;
 
-  m_camera.translate(factor * m_camera.forwardVector());
+  m_camera->translate(factor * m_camera->forwardVector());
 
   event->accept();
   update();

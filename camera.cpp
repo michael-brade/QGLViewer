@@ -58,10 +58,8 @@ void Camera::translate(const QVector3D &dt) {
   m_dirty = true;
   m_translation += dt;
 
-  if (m_config.c_mode == CameraMode::Target) {
-    distance = (m_target - m_translation).length();
-    updateFrustum();
-  }
+  distance = (m_target - m_translation).length();
+  updateFrustum();
 }
 
 void Camera::rotate(const QQuaternion &dr) {
@@ -82,10 +80,8 @@ void Camera::setTranslation(const QVector3D &t) {
   m_dirty = true;
   m_translation = t;
 
-  if (m_config.c_mode == CameraMode::Target) {
-    distance = (m_target - m_translation).length();
-    updateFrustum();
-  }
+  distance = (m_target - m_translation).length();
+  updateFrustum();
 }
 
 void Camera::setRotation(const QQuaternion &r) {

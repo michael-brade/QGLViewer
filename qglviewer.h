@@ -18,7 +18,7 @@ class QGLViewer : public QOpenGLWidget, protected QOpenGLFunctions
 {
   Q_OBJECT
 public:
-  QGLViewer(const CameraConfig& cameraConfig, QWidget *parent = nullptr);
+  QGLViewer(QWidget *parent = nullptr);
   ~QGLViewer() override;
 
   QSize minimumSizeHint() const override;

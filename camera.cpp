@@ -17,19 +17,40 @@ const auto degToRad = [](const float deg) {
 };
 
 
-Camera::Camera(const CameraConfig& config)
-    : m_config(config),
+// camera config defaults
+CameraConfig::CameraConfig()
+    : c_mode(CameraMode::Target),
+      p_mode(ProjectionMode::Perspective),
+      fov(45),
+      nearPlane(0.1f),
+      farPlane(1000),
+      initialTranslation(QVector3D()),
+      WorldForward(Camera::LocalForward),
+      WorldRight(Camera::LocalRight),
+      WorldUp(Camera::LocalUp)
+{}
+
+Camera::Camera()
+    : m_config(),
       aspectRatio(1),
       distance(0),
       m_dirty(true)
 {
+  setConfig(m_config);
+}
+
+
+void Camera::setConfig(const CameraConfig &config) {
+  m_config = config;
+
   QQuaternion localRotation = QQuaternion::fromAxes(-LocalForward, LocalRight, LocalUp);
   QQuaternion worldRotation = QQuaternion::fromAxes(-m_config.WorldForward, m_config.WorldRight, m_config.WorldUp);
 
   // from world to local OpenGL coordinates
   m_worldToLocal = localRotation * worldRotation.conjugated();
-}
 
+  reset();
+}
 
 // Transform By
 void Camera::translate(const QVector3D &dt) {

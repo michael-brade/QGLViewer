@@ -7,12 +7,12 @@
 #include <iostream>
 
 
-QGLViewer::QGLViewer(const CameraConfig& cameraConfig, QWidget *parent)
+QGLViewer::QGLViewer(QWidget *parent)
   : QOpenGLWidget(parent),
     m_drawGrid(true),
     m_drawAxes(true),
     m_program(nullptr),
-    m_camera(cameraConfig)
+    m_camera()
 {
   QSurfaceFormat format;
   format.setDepthBufferSize(24);

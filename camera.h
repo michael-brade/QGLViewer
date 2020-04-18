@@ -20,6 +20,8 @@ enum class ProjectionMode
 
 struct CameraConfig
 {
+  CameraConfig();
+
   CameraMode     c_mode;
   ProjectionMode p_mode;
 
@@ -41,7 +43,9 @@ class Camera : public QObject
 {
   Q_OBJECT
 public:
-  Camera(const CameraConfig& config);
+  Camera();
+
+  void setConfig(const CameraConfig &config);
 
   // Constants
   static const QVector3D LocalForward;

@@ -12,13 +12,14 @@ SET(SOURCES
   gldata.h
   qglviewer.cpp
   qglviewer.h
-
-  main.cpp
 )
 
 
-add_library(${PROJECT_NAME} ${SOURCES})
+add_executable(QGLViewerExample main.cpp)
+target_link_libraries(QGLViewerExample ${PROJECT_NAME})
 
+
+add_library(${PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
   Qt5::Core

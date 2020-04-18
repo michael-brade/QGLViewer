@@ -23,9 +23,9 @@ struct CameraConfig
   CameraMode     c_mode;
   ProjectionMode p_mode;
 
-  float fov;      // field of view
-  float near;     // near plane
-  float far;      // far plane (ideally, at least the scene diameter)
+  float fov;        // field of view
+  float nearPlane;  // near plane
+  float farPlane;   // far plane (ideally, at least the scene diameter)
 
   QVector3D initialTranslation;
 

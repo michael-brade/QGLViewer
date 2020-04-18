@@ -115,8 +115,8 @@ void Camera::setAspectRatio(float r) {
 
 
 void Camera::updateFrustum() {
-  float zNear = m_config.near;
-  float zFar = std::max(2.0f * distance, m_config.far);
+  float zNear = m_config.nearPlane;
+  float zFar = std::max(2.0f * distance, m_config.farPlane);
 
   m_projection.setToIdentity();
 
@@ -141,8 +141,7 @@ void Camera::reset() {
 
 
 // Accessors
-const QMatrix4x4 &Camera::toMatrix()
-{
+const QMatrix4x4 &Camera::toMatrix() {
   if (m_dirty) {
     m_dirty = false;
     m_world.setToIdentity();
@@ -175,8 +174,7 @@ bool Camera::upsideDown() const {
 
 // Qt Streams
 #ifndef QT_NO_DEBUG_STREAM
-QDebug operator<<(QDebug dbg, const Camera &transform)
-{
+QDebug operator<<(QDebug dbg, const Camera &transform) {
   dbg << "Camera\n{\n";
   dbg << "Position: <" << transform.translation().x() << ", " << transform.translation().y() << ", " << transform.translation().z() << ">\n";
   dbg << "Rotation: <" << transform.rotation().x() << ", " << transform.rotation().y() << ", " << transform.rotation().z() << " | " << transform.rotation().scalar() << ">\n}";

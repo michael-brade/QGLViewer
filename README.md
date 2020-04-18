@@ -2,6 +2,15 @@
 
 A Qt widget that allows to navigate a 3D OpenGL scene the way I want it to.
 
+## Build
+
+```
+mkdir build
+cd build
+cmake ..
+make
+```
+
 
 ## License
 

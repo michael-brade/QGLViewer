@@ -7,12 +7,32 @@
 #include <iostream>
 
 
+// grid config defaults
+GridConfig::GridConfig()
+  : minX(-2000), maxX(2000),
+    minY(-2000), maxY(2000),
+    step(100),
+    color(QVector3D(0.7f, 0.7f, 0.7f))
+{}
+
+// axes config defaults
+AxesConfig::AxesConfig()
+  : length(250.0f),
+    arrowSize(10.0f),
+    colorX(QVector3D(1, 0, 0)),
+    colorY(QVector3D(0, 1, 0)),
+    colorZ(QVector3D(0, 0, 1))
+{}
+
+
 QGLViewer::QGLViewer(QWidget *parent)
   : QOpenGLWidget(parent),
     m_drawGrid(true),
     m_gridVertexIdx(-1),
+    m_gridConfig(),
     m_drawAxes(true),
     m_axesVertexIdx(-1),
+    m_axesConfig(),
     m_program(nullptr),
     m_camera()
 {
@@ -43,6 +63,18 @@ void QGLViewer::setData(const GLData &data) {
   m_gridVertexIdx = -1;
   m_axesVertexIdx = -1;
 
+  setupGL();
+  update();
+}
+
+void QGLViewer::setGridConfig(const GridConfig &grid) {
+  m_gridConfig = grid;
+  setupGL();
+  update();
+}
+
+void QGLViewer::setAxesConfig(const AxesConfig &axes) {
+  m_axesConfig = axes;
   setupGL();
   update();
 }
@@ -129,46 +161,42 @@ void QGLViewer::initializeGridAndAxes() {
   m_gridVertexIdx = m_data.lineVertexCount();
 
   // setup grid
-  QVector3D color = QVector3D(0.7f, 0.7f, 0.7f);
-  for (int x = -2000; x <= 2000; x += 100) {
-    for (int y = -2000; y <= 2000; y += 100) {
+  for (int x = m_gridConfig.minX; x <= m_gridConfig.maxX; x += m_gridConfig.step) {
+    for (int y = m_gridConfig.minY; y <= m_gridConfig.maxY; y += m_gridConfig.step) {
       // parallel to x
-      m_data.addLine(QVector3D(-x, y, 0), QVector3D(x, y, 0), color);
+      m_data.addLine(QVector3D(-x, y, 0), QVector3D(x, y, 0), m_gridConfig.color);
 
       // parallel to y
-      m_data.addLine(QVector3D(x, -y, 0), QVector3D(x, y, 0), color);
+      m_data.addLine(QVector3D(x, -y, 0), QVector3D(x, y, 0), m_gridConfig.color);
     }
   }
 
   m_axesVertexIdx = m_data.lineVertexCount();
 
   // setup coordinate axes
-  const float length = 250.0f;
-  const float arrSize = 10;
+  const float &length = m_axesConfig.length;
+  const float &arrSize = m_axesConfig.arrowSize;
 
   // x (red)
-  color = QVector3D(1, 0, 0);
-  m_data.addLine(QVector3D(-length, 0, 0), QVector3D(length, 0, 0), color);
+  m_data.addLine(QVector3D(-length, 0, 0), QVector3D(length, 0, 0), m_axesConfig.colorX);
 
   // arrow
-  m_data.addLine(QVector3D(length, 0, 0), QVector3D(length - arrSize, arrSize / 2, 0), color);
-  m_data.addLine(QVector3D(length, 0, 0), QVector3D(length - arrSize, -arrSize / 2, 0), color);
+  m_data.addLine(QVector3D(length, 0, 0), QVector3D(length - arrSize, arrSize / 2, 0), m_axesConfig.colorX);
+  m_data.addLine(QVector3D(length, 0, 0), QVector3D(length - arrSize, -arrSize / 2, 0), m_axesConfig.colorX);
 
   // y (green)
-  color = QVector3D(0, 1, 0);
-  m_data.addLine(QVector3D(0, -length, 0), QVector3D(0, length, 0), color);
+  m_data.addLine(QVector3D(0, -length, 0), QVector3D(0, length, 0), m_axesConfig.colorY);
 
   // arrow
-  m_data.addLine(QVector3D(0, length, 0), QVector3D(arrSize / 2, length - arrSize, 0), color);
-  m_data.addLine(QVector3D(0, length, 0), QVector3D(-arrSize / 2, length - arrSize, 0), color);
+  m_data.addLine(QVector3D(0, length, 0), QVector3D(arrSize / 2, length - arrSize, 0), m_axesConfig.colorY);
+  m_data.addLine(QVector3D(0, length, 0), QVector3D(-arrSize / 2, length - arrSize, 0), m_axesConfig.colorY);
 
   // z (blue)
-  color = QVector3D(0, 0, 1);
-  m_data.addLine(QVector3D(0, 0, -length), QVector3D(0, 0, length), color);
+  m_data.addLine(QVector3D(0, 0, -length), QVector3D(0, 0, length), m_axesConfig.colorZ);
 
   // arrow
-  m_data.addLine(QVector3D(0, 0, length), QVector3D(arrSize / 2, 0, length - arrSize), color);
-  m_data.addLine(QVector3D(0, 0, length), QVector3D(-arrSize / 2, 0, length - arrSize), color);
+  m_data.addLine(QVector3D(0, 0, length), QVector3D(arrSize / 2, 0, length - arrSize), m_axesConfig.colorZ);
+  m_data.addLine(QVector3D(0, 0, length), QVector3D(-arrSize / 2, 0, length - arrSize), m_axesConfig.colorZ);
 }
 
 

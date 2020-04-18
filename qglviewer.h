@@ -14,6 +14,26 @@
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 
 
+struct GridConfig {
+  GridConfig();
+
+  int minX, maxX;   // draw the grid from minX to maxX
+  int minY, maxY;   // ...and from minY to maxY
+  int step;
+
+  QVector3D color;  // grid color
+};
+
+struct AxesConfig {
+  AxesConfig();
+
+  float length;
+  float arrowSize;
+
+  QVector3D colorX, colorY, colorZ;
+};
+
+
 class QGLViewer : public QOpenGLWidget, protected QOpenGLFunctions
 {
   Q_OBJECT
@@ -28,6 +48,8 @@ public:
 
   void setData(const GLData &data);
 
+  void setGridConfig(const GridConfig &grid);
+  void setAxesConfig(const AxesConfig &axes);
 
 public slots:
   void cleanup();
@@ -60,8 +82,11 @@ private:
 
   bool m_drawGrid;
   int m_gridVertexIdx;
+  GridConfig m_gridConfig;
+
   bool m_drawAxes;
   int m_axesVertexIdx;
+  AxesConfig m_axesConfig;
 
   QOpenGLShaderProgram *m_program;
 

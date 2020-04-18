@@ -348,13 +348,12 @@ void QGLViewer::mouseMoveEvent(QMouseEvent *event) {
     }
   } else if (event->buttons() & Qt::RightButton) {
     if (m_camera->cameraMode() == CameraMode::Free) {
-      dx *= -1;
+      m_camera->rotate(0.2f * dx, m_camera->forwardVector());
       m_camera->rotate(-0.2f * dy, m_camera->rightVector());
     } else {
+      m_camera->rotate(-0.2f * dx, m_camera->forwardVector());
       m_camera->rotate(-0.2f * dy, upDown * QVector3D::crossProduct(m_camera->forwardVector(), m_camera->worldUpVector()));
     }
-
-    m_camera->rotate(-0.2f * dx, m_camera->forwardVector());
   } else if (event->buttons() & Qt::MiddleButton) {
     if (m_camera->cameraMode() == CameraMode::Free) {
       dx *= -1;

@@ -10,7 +10,9 @@
 QGLViewer::QGLViewer(QWidget *parent)
   : QOpenGLWidget(parent),
     m_drawGrid(true),
+    m_gridVertexIdx(-1),
     m_drawAxes(true),
+    m_axesVertexIdx(-1),
     m_program(nullptr),
     m_camera()
 {
@@ -35,7 +37,12 @@ QSize QGLViewer::sizeHint() const {
 
 
 void QGLViewer::setData(const GLData& data) {
-  m_tris = data;
+  m_data = data;
+
+  // assumption: data has no grid or axes yet
+  m_gridVertexIdx = -1;
+  m_axesVertexIdx = -1;
+
   setupGL();
   update();
 }
@@ -107,73 +114,71 @@ void QGLViewer::initializeGL() {
   if (!m_trisVbo.create() || !m_linesVbo.create())
     std::cerr << "ERROR: failed to create vertex buffer object" << std::endl;
 
-  initializeGridAndAxes();
   setupGL();
 
   m_camera.reset();
 }
 
-void QGLViewer::initializeGridAndAxes() {
-  // setup grid
 
+void QGLViewer::initializeGridAndAxes() {
+  if (m_gridVertexIdx > -1) {
+    // if there were already a grid and axes, delete them before rebuilding
+    m_data.resizeLineVertexCount(m_gridVertexIdx);
+  }
+
+  m_gridVertexIdx = m_data.lineVertexCount();
+
+  // setup grid
   QVector3D color = QVector3D(0.7f, 0.7f, 0.7f);
   for (int x = -2000; x <= 2000; x += 100) {
     for (int y = -2000; y <= 2000; y += 100) {
       // parallel to x
-      m_lines.addVertex(QVector3D(-x, y, 0), color);
-      m_lines.addVertex(QVector3D(x, y, 0), color);
+      m_data.addLine(QVector3D(-x, y, 0), QVector3D(x, y, 0), color);
 
       // parallel to y
-      m_lines.addVertex(QVector3D(x, -y, 0), color);
-      m_lines.addVertex(QVector3D(x, y, 0), color);
+      m_data.addLine(QVector3D(x, -y, 0), QVector3D(x, y, 0), color);
     }
   }
 
-  // setup coordinate axes
+  m_axesVertexIdx = m_data.lineVertexCount();
 
+  // setup coordinate axes
   const float length = 250.0f;
   const float arrSize = 10;
 
   // x (red)
-  color = QVector3D(1,0,0);
-  m_lines.addVertex(QVector3D(-length, 0, 0), color);
-  m_lines.addVertex(QVector3D(length, 0, 0), color);
+  color = QVector3D(1, 0, 0);
+  m_data.addLine(QVector3D(-length, 0, 0), QVector3D(length, 0, 0), color);
 
   // arrow
-  m_lines.addVertex(QVector3D(length, 0, 0), color);
-  m_lines.addVertex(QVector3D(length-arrSize, arrSize/2, 0), color);
-
-  m_lines.addVertex(QVector3D(length, 0, 0), color);
-  m_lines.addVertex(QVector3D(length-arrSize, -arrSize/2, 0), color);
+  m_data.addLine(QVector3D(length, 0, 0), QVector3D(length - arrSize, arrSize / 2, 0), color);
+  m_data.addLine(QVector3D(length, 0, 0), QVector3D(length - arrSize, -arrSize / 2, 0), color);
 
   // y (green)
-  color = QVector3D(0,1,0);
-  m_lines.addVertex(QVector3D(0, -length, 0), color);
-  m_lines.addVertex(QVector3D(0, length, 0), color);
+  color = QVector3D(0, 1, 0);
+  m_data.addLine(QVector3D(0, -length, 0), QVector3D(0, length, 0), color);
 
   // arrow
-  m_lines.addVertex(QVector3D(0, length, 0), color);
-  m_lines.addVertex(QVector3D(arrSize/2, length-arrSize, 0), color);
-
-  m_lines.addVertex(QVector3D(0, length, 0), color);
-  m_lines.addVertex(QVector3D(-arrSize/2, length-arrSize, 0), color);
+  m_data.addLine(QVector3D(0, length, 0), QVector3D(arrSize / 2, length - arrSize, 0), color);
+  m_data.addLine(QVector3D(0, length, 0), QVector3D(-arrSize / 2, length - arrSize, 0), color);
 
   // z (blue)
-  color = QVector3D(0,0,1);
-  m_lines.addVertex(QVector3D(0, 0, -length), color);
-  m_lines.addVertex(QVector3D(0, 0, length), color);
+  color = QVector3D(0, 0, 1);
+  m_data.addLine(QVector3D(0, 0, -length), QVector3D(0, 0, length), color);
 
   // arrow
-  m_lines.addVertex(QVector3D(0, 0, length), color);
-  m_lines.addVertex(QVector3D(arrSize/2, 0, length-arrSize), color);
-
-  m_lines.addVertex(QVector3D(0, 0, length), color);
-  m_lines.addVertex(QVector3D(-arrSize/2, 0, length-arrSize), color);
+  m_data.addLine(QVector3D(0, 0, length), QVector3D(arrSize / 2, 0, length - arrSize), color);
+  m_data.addLine(QVector3D(0, 0, length), QVector3D(-arrSize / 2, 0, length - arrSize), color);
 }
 
 
 
 void QGLViewer::setupGL() {
+  if (m_program == nullptr)
+    return;
+
+  initializeGridAndAxes();
+
   m_trisVao.bind();
   m_program->bind();
 
@@ -181,7 +186,7 @@ void QGLViewer::setupGL() {
 
   // scene objects are in data VBO
   m_trisVbo.bind();
-  m_trisVbo.allocate(m_tris.constData(), m_tris.count() * sizeof(GLfloat));
+  m_trisVbo.allocate(m_data.triangleConstData(), m_data.triangleDataSize() * sizeof(GLfloat));
 
   // Store the vertex attribute bindings for the program.
   setupVertexAttribs();
@@ -192,7 +197,7 @@ void QGLViewer::setupGL() {
 
   m_linesVao.bind();
   m_linesVbo.bind();
-  m_linesVbo.allocate(m_lines.constData(), m_lines.count() * sizeof(GLfloat));
+  m_linesVbo.allocate(m_data.lineConstData(), m_data.lineDataSize() * sizeof(GLfloat));
   setupVertexAttribs();
   m_linesVbo.release();
   m_linesVao.release();
@@ -227,21 +232,21 @@ void QGLViewer::paintGL() {
   m_trisVao.bind();
   // render as wireframe
   //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  glDrawArrays(GL_TRIANGLES, 0, m_tris.vertexCount());
+  glDrawArrays(GL_TRIANGLES, 0, m_data.triangleVertexCount());
   m_trisVao.release();
 
 
-  if (m_drawGrid) {
+  if (m_drawGrid && m_gridVertexIdx > -1) {
     glLineWidth(0.5f);
     m_linesVao.bind();
-    glDrawArrays(GL_LINES, 0, m_lines.vertexCount() - 18);
+    glDrawArrays(GL_LINES, m_gridVertexIdx, m_axesVertexIdx - m_gridVertexIdx);
     m_linesVao.release();
   }
 
-  if (m_drawAxes) {
+  if (m_drawAxes && m_axesVertexIdx > -1) {
     glLineWidth(3);
     m_linesVao.bind();
-    glDrawArrays(GL_LINES, m_lines.vertexCount() - 18, m_lines.vertexCount());
+    glDrawArrays(GL_LINES, m_axesVertexIdx, m_data.lineVertexCount() - m_axesVertexIdx);
     m_linesVao.release();
   }
 

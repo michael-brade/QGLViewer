@@ -48,18 +48,20 @@ private:
 
   QPoint m_lastPos;
 
+  GLData m_data;
+
   // draw as triangles
-  GLData m_tris;
   QOpenGLVertexArrayObject m_trisVao;
   QOpenGLBuffer m_trisVbo;
 
   // draw as lines: grid and axes
-  GLData m_lines;
   QOpenGLVertexArrayObject m_linesVao;
   QOpenGLBuffer m_linesVbo;
 
   bool m_drawGrid;
+  int m_gridVertexIdx;
   bool m_drawAxes;
+  int m_axesVertexIdx;
 
   QOpenGLShaderProgram *m_program;
 

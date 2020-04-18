@@ -36,7 +36,7 @@ QSize QGLViewer::sizeHint() const {
 }
 
 
-void QGLViewer::setData(const GLData& data) {
+void QGLViewer::setData(const GLData &data) {
   m_data = data;
 
   // assumption: data has no grid or axes yet

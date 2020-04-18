@@ -78,12 +78,12 @@ public:
   void reset();
 
   // Accessors
-  const QVector3D& translation() const;
-  const QQuaternion& rotation() const;
-  const QVector3D& target() const;
-  const QMatrix4x4& projection() const;
+  const QVector3D & translation() const;
+  const QQuaternion & rotation() const;
+  const QVector3D & target() const;
+  const QMatrix4x4 & projection() const;
 
-  const QMatrix4x4& toMatrix();
+  const QMatrix4x4 & toMatrix();
 
   CameraMode cameraMode() const;
   ProjectionMode projectionMode() const;
@@ -95,14 +95,14 @@ public:
 
   bool upsideDown() const;
 
-  const QVector3D& worldForwardVector() const;
-  const QVector3D& worldRightVector() const;
-  const QVector3D& worldUpVector() const;
+  const QVector3D & worldForwardVector() const;
+  const QVector3D & worldRightVector() const;
+  const QVector3D & worldUpVector() const;
 
 signals:
   void cameraModeChanged(CameraMode);
   void projectionModeChanged(ProjectionMode);
-  void targetChanged(const QVector3D&);
+  void targetChanged(const QVector3D &);
 
 
 private:
@@ -139,10 +139,10 @@ inline void Camera::setRotation(float angle, const QVector3D &axis) { setRotatio
 inline void Camera::setRotation(float angle, float ax, float ay, float az) { setRotation(QQuaternion::fromAxisAndAngle(ax, ay, az, angle)); }
 
 // Accessors
-inline const QVector3D&   Camera::target()              const { return m_target; }
-inline const QVector3D&   Camera::translation()         const { return m_translation; }
+inline const QVector3D &  Camera::target()              const { return m_target; }
+inline const QVector3D &  Camera::translation()         const { return m_translation; }
 inline const QQuaternion& Camera::rotation()            const { return m_rotation; }
-inline const QMatrix4x4&  Camera::projection()          const { return m_projection; }
+inline const QMatrix4x4 & Camera::projection()          const { return m_projection; }
 
 inline CameraMode         Camera::cameraMode()          const { return m_config.c_mode; }
 inline ProjectionMode     Camera::projectionMode()      const { return m_config.p_mode; }
@@ -150,9 +150,9 @@ inline ProjectionMode     Camera::projectionMode()      const { return m_config.
 
 
 // Queries
-inline const QVector3D&   Camera::worldForwardVector()  const { return m_config.WorldForward; }
-inline const QVector3D&   Camera::worldRightVector()    const { return m_config.WorldRight; }
-inline const QVector3D&   Camera::worldUpVector()       const { return m_config.WorldUp; }
+inline const QVector3D &  Camera::worldForwardVector()  const { return m_config.WorldForward; }
+inline const QVector3D &  Camera::worldRightVector()    const { return m_config.WorldRight; }
+inline const QVector3D &  Camera::worldUpVector()       const { return m_config.WorldUp; }
 
 
 // Qt Streams
@@ -160,4 +160,4 @@ inline const QVector3D&   Camera::worldUpVector()       const { return m_config.
 QDebug operator<<(QDebug dbg, const Camera &transform);
 #endif
 
-#endif // CAMERA_H
+#endif  // CAMERA_H

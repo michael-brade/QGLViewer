@@ -19,22 +19,22 @@ const auto degToRad = [](const float deg) {
 
 // camera config defaults
 CameraConfig::CameraConfig()
-    : c_mode(CameraMode::Target),
-      p_mode(ProjectionMode::Perspective),
-      fov(45),
-      nearPlane(0.1f),
-      farPlane(1000),
-      initialTranslation(QVector3D()),
-      WorldForward(Camera::LocalForward),
-      WorldRight(Camera::LocalRight),
-      WorldUp(Camera::LocalUp)
+  : c_mode(CameraMode::Target),
+    p_mode(ProjectionMode::Perspective),
+    fov(45),
+    nearPlane(0.1f),
+    farPlane(1000),
+    initialTranslation(QVector3D()),
+    WorldForward(Camera::LocalForward),
+    WorldRight(Camera::LocalRight),
+    WorldUp(Camera::LocalUp)
 {}
 
 Camera::Camera()
-    : m_config(),
-      aspectRatio(1),
-      distance(0),
-      m_dirty(true)
+  : m_config(),
+    aspectRatio(1),
+    distance(0),
+    m_dirty(true)
 {
   setConfig(m_config);
 }

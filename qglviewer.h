@@ -26,7 +26,7 @@ public:
 
   Camera& camera() { return m_camera; }
 
-  void setData(const GLData& data);
+  void setData(const GLData &data);
 
 
 public slots:

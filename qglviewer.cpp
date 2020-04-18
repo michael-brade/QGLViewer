@@ -335,22 +335,26 @@ void QGLViewer::mouseMoveEvent(QMouseEvent *event) {
     dy /= 4;
   }
 
-  if (event->buttons() & Qt::LeftButton) {
-    if (m_camera->cameraMode() == CameraMode::Free)
-      m_camera->rotate(-0.2f * dx, m_camera->upVector());
-    else if (m_camera->upsideDown())
-      m_camera->rotate(-0.2f * dx, -m_camera->worldUpVector()); // if the up vector actually points down, reverse rotation
-    else
-      m_camera->rotate(-0.2f * dx, m_camera->worldUpVector());
+  int upDown = m_camera->upsideDown() ? -1 : 1;
 
-    m_camera->rotate(-0.2f * dy, m_camera->rightVector());
+  if (event->buttons() & Qt::LeftButton) {
+    if (m_camera->cameraMode() == CameraMode::Free) {
+      m_camera->rotate(-0.2f * dx, m_camera->upVector());
+      m_camera->rotate(-0.2f * dy, m_camera->rightVector());
+    } else {
+      // if the up vector actually points down, reverse rotation
+      m_camera->rotate(-0.2f * dx, upDown * m_camera->worldUpVector());
+      m_camera->rotate(-0.2f * dy, upDown * QVector3D::crossProduct(m_camera->forwardVector(), m_camera->worldUpVector()));
+    }
   } else if (event->buttons() & Qt::RightButton) {
     if (m_camera->cameraMode() == CameraMode::Free) {
       dx *= -1;
+      m_camera->rotate(-0.2f * dy, m_camera->rightVector());
+    } else {
+      m_camera->rotate(-0.2f * dy, upDown * QVector3D::crossProduct(m_camera->forwardVector(), m_camera->worldUpVector()));
     }
 
     m_camera->rotate(-0.2f * dx, m_camera->forwardVector());
-    m_camera->rotate(-0.2f * dy, m_camera->rightVector());
   } else if (event->buttons() & Qt::MiddleButton) {
     if (m_camera->cameraMode() == CameraMode::Free) {
       dx *= -1;

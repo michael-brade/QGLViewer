@@ -4,6 +4,7 @@
 
 
 // directions in local OpenGL coordinates
+// default: up is the Y axis, forward is Z
 const QVector3D Camera::LocalForward(0, 0, -1);
 const QVector3D Camera::LocalRight  (1, 0,  0);
 const QVector3D Camera::LocalUp     (0, 1,  0);

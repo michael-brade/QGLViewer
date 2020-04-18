@@ -44,7 +44,7 @@ public:
   QSize minimumSizeHint() const override;
   QSize sizeHint() const override;
 
-  Camera *camera() { return m_camera; }
+  Camera *camera() const { return m_camera; }
 
   void setData(const GLData &data);
 

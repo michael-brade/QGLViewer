@@ -44,7 +44,16 @@ QGLViewer::QGLViewer(QWidget *parent)
 }
 
 QGLViewer::~QGLViewer() {
-  cleanup();
+  if (m_program == nullptr)
+    return;
+
+  makeCurrent();
+  m_trisVbo.destroy();
+  m_linesVbo.destroy();
+  delete m_program;
+  m_program = nullptr;
+  doneCurrent();
+
   delete m_camera;
   m_camera = nullptr;
 }
@@ -82,18 +91,6 @@ void QGLViewer::setAxesConfig(const AxesConfig &axes) {
   update();
 }
 
-void QGLViewer::cleanup() {
-  if (m_program == nullptr)
-    return;
-
-  makeCurrent();
-  m_trisVbo.destroy();
-  m_linesVbo.destroy();
-  delete m_program;
-  m_program = nullptr;
-  doneCurrent();
-}
-
 
 
 static const char *vertexShaderSource = R"(
@@ -120,9 +117,6 @@ static const char *fragmentShaderSource = R"(
 
 
 void QGLViewer::initializeGL() {
-  // context() and QOpenGLContext::currentContext() are equivalent when called from initializeGL or paintGL.
-  connect(context(), &QOpenGLContext::aboutToBeDestroyed, this, &QGLViewer::cleanup);
-
   initializeOpenGLFunctions();
 
   glClearColor(0, 0, 0, 1);

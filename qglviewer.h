@@ -51,9 +51,6 @@ public:
   void setGridConfig(const GridConfig &grid);
   void setAxesConfig(const AxesConfig &axes);
 
-public slots:
-  void cleanup();
-
 protected:
   void initializeGL() override;
   void paintGL() override;

@@ -266,6 +266,10 @@ void QGLViewer::paintGL() {
   glDrawArrays(GL_TRIANGLES, 0, m_data.triangleVertexCount());
   m_trisVao.release();
 
+  glLineWidth(2);
+  m_linesVao.bind();
+  glDrawArrays(GL_LINES, 0, m_gridVertexIdx);
+  m_linesVao.release();
 
   if (m_drawGrid && m_gridVertexIdx > -1) {
     glLineWidth(0.5f);

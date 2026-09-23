@@ -1,0 +1,14 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    // "C_Cpp.default.compileCommands": [
+    //     "${workspaceFolder}/build/compile_commands.json"
+    // ],
+    "clangd.arguments": [
+        "--compile-commands-dir=${workspaceFolder}/build",
+        // "-std=c++20"
+    ],
+    "cmake.configureOnOpen": true,
+    "files.associations": {
+        "*.": "cpp"
+    }
+}

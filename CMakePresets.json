@@ -1,0 +1,15 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "GCC 16",
+            "displayName": "GCC 16",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/install/",
+                "CMAKE_CXX_COMPILER": "/usr/bin/g++-16",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        }
+    ]
+}

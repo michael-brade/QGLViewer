@@ -4,7 +4,6 @@
 #include <QMouseEvent>
 #include <QOpenGLShaderProgram>
 
-#include <cmath>
 #include <iostream>
 
 
@@ -323,8 +322,8 @@ void QGLViewer::mousePressEvent(QMouseEvent *event) {
 }
 
 void QGLViewer::mouseMoveEvent(QMouseEvent *event) {
-  float dx = event->x() - m_lastPos.x();
-  float dy = event->y() - m_lastPos.y();
+  float dx = event->position().x() - m_lastPos.x();
+  float dy = event->position().y() - m_lastPos.y();
 
   QCursor::setPos(mapToGlobal(m_lastPos));
 

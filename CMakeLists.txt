@@ -12,9 +12,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-
-find_package(Qt5 COMPONENTS Core Gui OpenGL Widgets REQUIRED)
-
+find_package(Qt6 COMPONENTS Core Gui OpenGL Widgets OpenGLWidgets REQUIRED)
 
 SET(SOURCES
   camera.cpp
@@ -34,10 +32,11 @@ add_library(${PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
 PUBLIC
-  Qt5::Core
-  Qt5::Gui
-  Qt5::OpenGL
-  Qt5::Widgets
+  Qt6::Core
+  Qt6::Gui
+  Qt6::OpenGL
+  Qt6::Widgets
+  Qt6::OpenGLWidgets
 )
 
 target_include_directories(${PROJECT_NAME}

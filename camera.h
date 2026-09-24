@@ -1,6 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <QObject>
 #include <QVector3D>
 #include <QQuaternion>
 #include <QMatrix4x4>
@@ -125,7 +126,6 @@ private:
   bool m_dirty;
 };
 
-Q_DECLARE_TYPEINFO(Camera, Q_MOVABLE_TYPE);
 
 // Transform By (Add/Scale)
 inline void Camera::translate(float dx, float dy,float dz) { translate(QVector3D(dx, dy, dz)); }
